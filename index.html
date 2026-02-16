@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UltraTech Incentive Tour 2026</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- Icons (SVG Components) ---
+        const IconWrapper = ({ children, className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                {children}
+            </svg>
+        );
+
+        const Calendar = ({ size = 24, className = "" }) => (
+            <IconWrapper className={className} width={size} height={size}>
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>
+            </IconWrapper>
+        );
+        const MapPin = ({ size = 24, className = "" }) => (
+            <IconWrapper className={className} width={size} height={size}>
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle>
+            </IconWrapper>
+        );
+        const Hotel = ({ size = 24, className = "" }) => (
+            <IconWrapper className={className} width={size} height={size}>
+                <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18"></path><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path><path d="M10 6h4"></path><path d="M10 10h4"></path><path d="M10 14h4"></path><path d="M10 18h4"></path>
+            </IconWrapper>
+        );
+        const Plane = ({ size = 24, className = "" }) => (
+            <IconWrapper className={className} width={size} height={size}>
+                <path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4 20-7z"></path>
+            </IconWrapper>
+        );
+        const Info = ({ size = 24, className = "" }) => (
+            <IconWrapper className={className} width={size} height={size}>
+                <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </IconWrapper>
+        );
+        const Sun = ({ size = 24, className = "" }) => (
+            <IconWrapper className={className} width={size} height={size}>
+                <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </IconWrapper>
+        );
+        const CreditCard = ({ size = 24, className = "" }) => (
+            <IconWrapper className={className} width={size} height={size}>
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line>
+            </IconWrapper>
+        );
+        const CheckCircle = ({ size = 24, className = "" }) => (
+            <IconWrapper className={className} width={size} height={size}>
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </IconWrapper>
+        );
+        const XCircle = ({ size = 24, className = "" }) => (
+            <IconWrapper className={className} width={size} height={size}>
+                <circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line>
+            </IconWrapper>
+        );
+        const Globe = ({ size = 24, className = "" }) => (
+            <IconWrapper className={className} width={size} height={size}>
+                <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </IconWrapper>
+        );
+        const Clock = ({ size = 24, className = "" }) => (
+            <IconWrapper className={className} width={size} height={size}>
+                <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+            </IconWrapper>
+        );
+        const Phone = ({ size = 24, className = "" }) => (
+            <IconWrapper className={className} width={size} height={size}>
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </IconWrapper>
+        );
+        const Heart = ({ size = 24, className = "" }) => (
+            <IconWrapper className={className} width={size} height={size}>
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </IconWrapper>
+        );
+
+        // --- Data Configuration ---
+        const tripData = {
+          meta: {
+            title: { en: "Vienna + Prague + Budapest", hi: "वियना + प्राग + बुडापेस्ट" },
+            subtitle: { en: "UltraTech Cement Incentive Tour", hi: "अल्ट्राटेक सीमेंट इंसेंटिव टूर" },
+            dates: { en: "Feb 22 - Mar 01, 2026", hi: "22 फरवरी - 01 मार्च, 2026" },
+            company: "UltraTech Cement",
+            partner: "SOTC"
+          },
+          flights: [
+            {
+              id: 1,
+              route: { en: "Delhi → Vienna", hi: "दिल्ली → वियना" },
+              code: "AI-153",
+              date: "22 Feb 2026",
+              dep: "14:00",
+              arr: "18:55",
+              icon: <Plane className="w-6 h-6" />
+            },
+            {
+              id: 2,
+              route: { en: "Vienna → Delhi", hi: "वियना → दिल्ली" },
+              code: "AI-154",
+              date: "28 Feb 2026",
+              dep: "20:30",
+              arr: "09:05 (+1)",
+              icon: <Plane className="w-6 h-6 transform rotate-180" />
+            }
+          ],
+          hotels: [
+            {
+              city: { en: "Vienna", hi: "वियना" },
+              name: "Roomz Vienna Prater",
+              address: "Rothschildpl. 2, 1020 Wien, Austria",
+              phone: "+43 1 3615540",
+              image: "https://images.unsplash.com/photo-1516550893923-42d28e5677af?auto=format&fit=crop&q=80&w=800",
+              nights: 2
+            },
+            {
+              city: { en: "Prague", hi: "प्राग" },
+              name: "Mama Shelter Prague",
+              address: "Veletrzni 1502/20, 17000 Praha 7",
+              phone: "+420 225 117 111",
+              image: "https://images.unsplash.com/photo-1541336528065-8f1fdc435835?auto=format&fit=crop&q=80&w=800",
+              nights: 2
+            },
+            {
+              city: { en: "Budapest", hi: "बुडापेस्ट" },
+              name: "NH Budapest City",
+              address: "Budapest, Vígszínház u. 3 H, 1137",
+              phone: "+36 1 814 0000",
+              image: "https://images.unsplash.com/photo-1565426873118-a1dfa040b2a6?auto=format&fit=crop&q=80&w=800",
+              nights: 2
+            }
+          ],
+          itinerary: [
+            {
+              day: 1,
+              date: "22 Feb",
+              title: { en: "Arrival in Vienna", hi: "वियना आगमन" },
+              activities: {
+                en: [
+                  "Arrival at Vienna Int'l Airport (18:55 hrs)",
+                  "Transfer to Indian Restaurant for Dinner",
+                  "Check-in at Roomz Vienna Prater Hotel"
+                ],
+                hi: [
+                  "वियना अंतरराष्ट्रीय हवाई अड्डे पर आगमन (18:55 बजे)",
+                  "रात के खाने के लिए भारतीय रेस्तरां में स्थानांतरण",
+                  "होटल रूमज़ वियना प्रेटर में चेक-इन"
+                ]
+              }
+            },
+            {
+              day: 2,
+              date: "23 Feb",
+              title: { en: "Vienna City Tour", hi: "वियना शहर का दौरा" },
+              activities: {
+                en: [
+                  "Guided City Tour & Schönbrunn Palace",
+                  "Lunch at Indian Restaurant",
+                  "Free time for Shopping/Leisure",
+                  "Dinner at Indian Restaurant"
+                ],
+                hi: [
+                  "गाइडेड सिटी टूर और शॉनब्रुन पैलेस",
+                  "भारतीय रेस्तरां में दोपहर का भोजन",
+                  "खरीदारी/अवकाश के लिए खाली समय",
+                  "भारतीय रेस्तरां में रात का खाना"
+                ]
+              }
+            },
+            {
+              day: 3,
+              date: "24 Feb",
+              title: { en: "Vienna to Prague", hi: "वियना से प्राग" },
+              activities: {
+                en: [
+                  "Transfer to Prague (Approx. 335 Kms)",
+                  "Scenic countryside views",
+                  "Lunch at Indian Restaurant",
+                  "Guided tour of Old Town Square",
+                  "Dinner at Indian Restaurant"
+                ],
+                hi: [
+                  "प्राग के लिए स्थानांतरण (लगभग 335 किमी)",
+                  "सुंदर ग्रामीण दृश्य",
+                  "भारतीय रेस्तरां में दोपहर का भोजन",
+                  "ओल्ड टाउन स्क्वायर का गाइडेड टूर",
+                  "भारतीय रेस्तरां में रात का खाना"
+                ]
+              }
+            },
+            {
+              day: 4,
+              date: "25 Feb",
+              title: { en: "Prague Exploration", hi: "प्राग अन्वेषण" },
+              activities: {
+                en: [
+                  "Visit Prague Castle & Charles Bridge",
+                  "Lunch at Indian Restaurant",
+                  "Shopping at Palladium Mall",
+                  "Vltava River Cruise",
+                  "Dinner at Indian Restaurant"
+                ],
+                hi: [
+                  "प्राग कैसल और चार्ल्स ब्रिज की यात्रा",
+                  "भारतीय रेस्तरां में दोपहर का भोजन",
+                  "पैलेडियम मॉल में खरीदारी",
+                  "वल्तावा नदी क्रूज",
+                  "भारतीय रेस्तरां में रात का खाना"
+                ]
+              }
+            },
+            {
+              day: 5,
+              date: "26 Feb",
+              title: { en: "Prague to Budapest", hi: "प्राग से बुडापेस्ट" },
+              activities: {
+                en: [
+                  "Transfer to Budapest (Approx. 525 Kms)",
+                  "Lunch at Indian Restaurant",
+                  "Arrival in Budapest",
+                  "Dinner at Indian Restaurant"
+                ],
+                hi: [
+                  "बुडापेस्ट के लिए स्थानांतरण (लगभग 525 किमी)",
+                  "भारतीय रेस्तरां में दोपहर का भोजन",
+                  "बुडापेस्ट आगमन",
+                  "भारतीय रेस्तरां में रात का खाना"
+                ]
+              }
+            },
+            {
+              day: 6,
+              date: "27 Feb",
+              title: { en: "Budapest Discovery", hi: "बुडापेस्ट भ्रमण" },
+              activities: {
+                en: [
+                  "Guided City Tour of Budapest",
+                  "Lunch at Indian Restaurant",
+                  "Shopping at Váci Street",
+                  "Evening Danube River Cruise",
+                  "Cocktail Dinner at Indian Restaurant"
+                ],
+                hi: [
+                  "बुडापेस्ट का गाइडेड सिटी टूर",
+                  "भारतीय रेस्तरां में दोपहर का भोजन",
+                  "वासी स्ट्रीट पर खरीदारी",
+                  "शाम को डेन्यूब नदी क्रूज",
+                  "भारतीय रेस्तरां में कॉकटेल डिनर"
+                ]
+              }
+            },
+            {
+              day: 7,
+              date: "28 Feb",
+              title: { en: "Departure", hi: "प्रस्थान" },
+              activities: {
+                en: [
+                  "Scenic drive Budapest to Vienna (244 Kms)",
+                  "Shopping stop at Parndorf Outlet",
+                  "Depart for flight back to Delhi"
+                ],
+                hi: [
+                  "बुडापेस्ट से वियना की सुंदर ड्राइव (244 किमी)",
+                  "पार्नडॉर्फ आउटलेट पर खरीदारी",
+                  "दिल्ली वापसी की उड़ान के लिए प्रस्थान"
+                ]
+              }
+            }
+          ],
+          guidelines: {
+            weather: {
+              title: { en: "Weather (Feb)", hi: "मौसम (फरवरी)" },
+              desc: { en: "Cold winter weather (3-6°C). Expect freezing nights. Carry heavy woolens.", hi: "ठंडा सर्दी का मौसम (3-6°C)। रातें बर्फीली हो सकती हैं। भारी ऊनी कपड़े साथ रखें।" }
+            },
+            baggage: {
+              title: { en: "Baggage", hi: "सामान" },
+              desc: { en: "Check-in: 23KG | Hand: 7KG. Power banks in hand luggage only.", hi: "चेक-इन: 23 किलो | हाथ: 7 किलो। पावर बैंक केवल हाथ के सामान में।" }
+            },
+            currency: {
+              title: { en: "Currency", hi: "मुद्रा" },
+              desc: { en: "Vienna: Euro (€) | Prague: Koruna (CZK) | Budapest: Forint (HUF)", hi: "वियना: यूरो (€) | प्राग: कोरुना (CZK) | बुडापेस्ट: फ़ोरिंट (HUF)" }
+            }
+          }
+        };
+
+        // --- Components ---
+
+        const Header = ({ lang, setLang, activeTab, setActiveTab }) => (
+          <header className="bg-yellow-500 text-slate-900 sticky top-0 z-50 shadow-lg">
+            <div className="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+              <div>
+                <h1 className="font-bold text-lg leading-tight">{tripData.meta.company}</h1>
+                <p className="text-xs opacity-90 font-medium">Incentive Tour 2026</p>
+              </div>
+              <button 
+                onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
+                className="flex items-center gap-1 bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-full text-sm font-semibold transition-all"
+              >
+                <Globe size={16} />
+                {lang === 'en' ? 'हिंदी' : 'English'}
+              </button>
+            </div>
+            
+            {/* Navigation Tabs */}
+            <div className="bg-slate-900 text-white overflow-x-auto">
+              <div className="flex max-w-4xl mx-auto">
+                {[
+                  { id: 'itinerary', label: { en: 'Itinerary', hi: 'यात्रा कार्यक्रम' }, icon: Calendar },
+                  { id: 'hotels', label: { en: 'Hotels', hi: 'होटल' }, icon: Hotel },
+                  { id: 'guide', label: { en: 'Guide', hi: 'गाइड' }, icon: Info },
+                  { id: 'flights', label: { en: 'Flights', hi: 'उड़ानें' }, icon: Plane },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex-1 flex flex-col items-center py-3 px-4 min-w-[80px] transition-colors border-b-4 ${
+                      activeTab === tab.id 
+                        ? 'border-yellow-500 text-yellow-500 bg-slate-800' 
+                        : 'border-transparent text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <tab.icon size={20} className="mb-1" />
+                    <span className="text-xs uppercase tracking-wide font-medium whitespace-nowrap">
+                      {tab.label[lang]}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </header>
+        );
+
+        const ItineraryView = ({ lang }) => (
+          <div className="space-y-6 py-6 px-4">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-slate-800">{tripData.meta.title[lang]}</h2>
+              <p className="text-slate-500 mt-1 flex items-center justify-center gap-2">
+                <Calendar size={16} />
+                {tripData.meta.dates[lang]}
+              </p>
+            </div>
+
+            <div className="relative border-l-2 border-slate-200 ml-3 space-y-8 pb-4">
+              {tripData.itinerary.map((item, idx) => (
+                <div key={idx} className="relative pl-8">
+                  {/* Dot */}
+                  <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-yellow-500 border-2 border-white shadow-sm" />
+                  
+                  <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-5 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                        {lang === 'en' ? `Day ${item.day}` : `दिन ${item.day}`}
+                      </span>
+                      <span className="text-sm font-semibold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded">
+                        {item.date}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-lg font-bold text-slate-800 mb-3">{item.title[lang]}</h3>
+                    
+                    <ul className="space-y-2">
+                      {item.activities[lang].map((act, actIdx) => (
+                        <li key={actIdx} className="flex items-start gap-3 text-slate-600 text-sm leading-relaxed">
+                          <div className="min-w-[4px] h-[4px] rounded-full bg-slate-300 mt-2" />
+                          {act}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+        const HotelsView = ({ lang }) => (
+          <div className="space-y-6 py-6 px-4">
+            <h2 className="text-xl font-bold text-slate-800 px-2">{lang === 'en' ? 'Your Accommodation' : 'आपका आवास'}</h2>
+            <div className="grid gap-6 sm:grid-cols-2">
+              {tripData.hotels.map((hotel, idx) => (
+                <div key={idx} className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden group">
+                  <div className="h-40 bg-slate-200 relative overflow-hidden">
+                    <img src={hotel.image} alt={hotel.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <div className="absolute bottom-0 left-0 bg-gradient-to-t from-black/70 to-transparent w-full p-4 pt-12">
+                      <span className="text-white font-bold text-lg">{hotel.city[lang]}</span>
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="font-bold text-lg text-slate-800 mb-1">{hotel.name}</h3>
+                    <p className="text-slate-500 text-sm mb-4 flex items-start gap-2">
+                      <MapPin size={16} className="shrink-0 mt-0.5" />
+                      {hotel.address}
+                    </p>
+                    <div className="flex items-center gap-3 text-sm text-blue-600 bg-blue-50 p-3 rounded-lg">
+                      <Phone size={16} />
+                      <a href={`tel:${hotel.phone}`} className="font-medium hover:underline">{hotel.phone}</a>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+        const GuideView = ({ lang }) => (
+          <div className="space-y-6 py-6 px-4">
+            {/* Quick Stats Grid */}
+            <div className="grid grid-cols-1 gap-4">
+              {[
+                { data: tripData.guidelines.weather, icon: Sun, color: "text-orange-500", bg: "bg-orange-50" },
+                { data: tripData.guidelines.currency, icon: CreditCard, color: "text-green-600", bg: "bg-green-50" },
+                { data: tripData.guidelines.baggage, icon: CheckCircle, color: "text-blue-600", bg: "bg-blue-50" },
+              ].map((item, idx) => (
+                <div key={idx} className="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-start gap-4">
+                  <div className={`p-3 rounded-full ${item.bg} ${item.color}`}>
+                    <item.icon size={24} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-800">{item.data.title[lang]}</h4>
+                    <p className="text-slate-600 text-sm mt-1 leading-relaxed">{item.data.desc[lang]}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Do's and Don'ts */}
+            <div className="mt-8">
+              <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                <Info className="text-yellow-500" />
+                {lang === 'en' ? "Important Guidelines" : "महत्वपूर्ण दिशानिर्देश"}
+              </h3>
+              
+              <div className="space-y-4">
+                <div className="bg-white rounded-xl overflow-hidden border border-slate-200">
+                  <div className="bg-green-100 px-4 py-2 border-b border-green-200">
+                    <h4 className="font-bold text-green-800 text-sm uppercase tracking-wider flex items-center gap-2">
+                      <CheckCircle size={16} /> {lang === 'en' ? "Do's" : "क्या करें"}
+                    </h4>
+                  </div>
+                  <ul className="p-4 space-y-3">
+                    {[
+                      { en: "Carry comfortable walking shoes & sunglasses.", hi: "आरामदायक जूते और धूप का चश्मा साथ रखें।" },
+                      { en: "Keep valuables in your handbag (Passport/Cash).", hi: "कीमती सामान हैंडबैग में रखें (पासपोर्ट/नकद)।" },
+                      { en: "Be punctual for all sightseeing.", hi: "सभी दर्शनीय स्थलों की यात्रा के लिए समय के पाबंद रहें।" },
+                      { en: "Respect local customs & silence zones.", hi: "स्थानीय रीति-रिवाजों का सम्मान करें।" }
+                    ].map((item, i) => (
+                      <li key={i} className="flex gap-3 text-sm text-slate-700">
+                        <span className="text-green-500 font-bold">•</span> {item[lang]}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="bg-white rounded-xl overflow-hidden border border-slate-200">
+                  <div className="bg-red-100 px-4 py-2 border-b border-red-200">
+                    <h4 className="font-bold text-red-800 text-sm uppercase tracking-wider flex items-center gap-2">
+                      <XCircle size={16} /> {lang === 'en' ? "Don'ts" : "क्या न करें"}
+                    </h4>
+                  </div>
+                  <ul className="p-4 space-y-3">
+                    {[
+                      { en: "No eating or smoking inside the coach.", hi: "बस के अंदर खाना या धूम्रपान मना है।" },
+                      { en: "Do not jaywalk; use zebra crossings.", hi: "सड़क के बीच से न चलें; ज़ेबरा क्रॉसिंग का प्रयोग करें।" },
+                      { en: "Avoid loud conversations in public.", hi: "सार्वजनिक स्थानों पर ज़ोर से बात न करें।" },
+                      { en: "Don't leave valuables in the hotel room.", hi: "होटल के कमरे में कीमती सामान न छोड़ें।" }
+                    ].map((item, i) => (
+                      <li key={i} className="flex gap-3 text-sm text-slate-700">
+                        <span className="text-red-500 font-bold">•</span> {item[lang]}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+        const FlightsView = ({ lang }) => (
+          <div className="space-y-6 py-6 px-4">
+             <h2 className="text-xl font-bold text-slate-800 px-2">{lang === 'en' ? 'Flight Details' : 'उड़ान विवरण'}</h2>
+            {tripData.flights.map((flight) => (
+              <div key={flight.id} className="bg-white rounded-xl shadow-md border-l-4 border-yellow-500 p-5">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Air India</span>
+                    <h3 className="text-2xl font-bold text-slate-800">{flight.code}</h3>
+                  </div>
+                  <div className="bg-slate-100 p-2 rounded-full text-slate-600">
+                    {flight.icon}
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between text-slate-700 mb-6">
+                   <div className="font-medium">{flight.route[lang]}</div>
+                   <div className="text-sm bg-yellow-100 text-yellow-800 px-2 py-1 rounded">{flight.date}</div>
+                </div>
+
+                <div className="flex justify-between items-center bg-slate-50 p-4 rounded-lg border border-slate-100">
+                  <div className="text-center">
+                    <p className="text-xs text-slate-400 font-medium uppercase">Departs</p>
+                    <p className="text-xl font-bold text-slate-800">{flight.dep}</p>
+                  </div>
+                  <div className="flex-1 flex flex-col items-center px-4">
+                     <div className="h-[2px] w-full bg-slate-300 relative top-2"></div>
+                     <Clock size={14} className="text-slate-400 bg-slate-50 px-1 relative z-10" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs text-slate-400 font-medium uppercase">Arrives</p>
+                    <p className="text-xl font-bold text-slate-800">{flight.arr}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+            
+            <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg flex gap-3 items-start">
+              <Info className="text-blue-500 shrink-0 mt-0.5" size={18} />
+              <p className="text-sm text-blue-800 leading-relaxed">
+                {lang === 'en' 
+                  ? "Please arrive at the International Airport 4 hours prior to departure."
+                  : "कृपया प्रस्थान से 4 घंटे पहले अंतरराष्ट्रीय हवाई अड्डे पर पहुंचें।"}
+              </p>
+            </div>
+          </div>
+        );
+
+        // --- Main App ---
+        function App() {
+          const [activeTab, setActiveTab] = useState('itinerary');
+          const [lang, setLang] = useState('hi'); // Default to Hindi
+
+          return (
+            <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-8 flex flex-col">
+              <Header lang={lang} setLang={setLang} activeTab={activeTab} setActiveTab={setActiveTab} />
+              
+              <main className="max-w-4xl mx-auto flex-grow w-full">
+                {activeTab === 'itinerary' && <ItineraryView lang={lang} />}
+                {activeTab === 'hotels' && <HotelsView lang={lang} />}
+                {activeTab === 'guide' && <GuideView lang={lang} />}
+                {activeTab === 'flights' && <FlightsView lang={lang} />}
+              </main>
+
+              <footer className="text-center text-slate-400 text-xs py-8 mt-4 border-t border-slate-200">
+                <p>© 2026 UltraTech Cement Ltd. | Managed by SOTC</p>
+                <p className="mt-1 mb-3">Have a pleasant journey!</p>
+                <p className="flex items-center justify-center gap-1 opacity-60">
+                  Made with <Heart size={10} className="text-red-400 fill-current" /> by <span className="font-semibold text-slate-500">Mukul Jain</span>
+                </p>
+              </footer>
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
